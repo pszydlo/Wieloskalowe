@@ -1,0 +1,10 @@
+C:\Users\piotr\source\repos\RozrostZiaren\RozrostZiaren\bin\Debug\RozrostZiaren.exe.config
+C:\Users\piotr\source\repos\RozrostZiaren\RozrostZiaren\bin\Debug\RozrostZiaren.exe
+C:\Users\piotr\source\repos\RozrostZiaren\RozrostZiaren\bin\Debug\RozrostZiaren.pdb
+C:\Users\piotr\source\repos\RozrostZiaren\RozrostZiaren\obj\Debug\RozrostZiaren.csprojAssemblyReference.cache
+C:\Users\piotr\source\repos\RozrostZiaren\RozrostZiaren\obj\Debug\RozrostZiaren.Form1.resources
+C:\Users\piotr\source\repos\RozrostZiaren\RozrostZiaren\obj\Debug\RozrostZiaren.Properties.Resources.resources
+C:\Users\piotr\source\repos\RozrostZiaren\RozrostZiaren\obj\Debug\RozrostZiaren.csproj.GenerateResource.cache
+C:\Users\piotr\source\repos\RozrostZiaren\RozrostZiaren\obj\Debug\RozrostZiaren.csproj.CoreCompileInputs.cache
+C:\Users\piotr\source\repos\RozrostZiaren\RozrostZiaren\obj\Debug\RozrostZiaren.exe
+C:\Users\piotr\source\repos\RozrostZiaren\RozrostZiaren\obj\Debug\RozrostZiaren.pdb

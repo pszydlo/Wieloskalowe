@@ -1,0 +1,10 @@
+C:\Users\piotr\source\repos\GraWZycie\GraWZycie\bin\Release\GraWZycie.exe.config
+C:\Users\piotr\source\repos\GraWZycie\GraWZycie\bin\Release\GraWZycie.exe
+C:\Users\piotr\source\repos\GraWZycie\GraWZycie\bin\Release\GraWZycie.pdb
+C:\Users\piotr\source\repos\GraWZycie\GraWZycie\obj\Release\GraWZycie.Form1.resources
+C:\Users\piotr\source\repos\GraWZycie\GraWZycie\obj\Release\GraWZycie.Properties.Resources.resources
+C:\Users\piotr\source\repos\GraWZycie\GraWZycie\obj\Release\GraWZycie.csproj.GenerateResource.cache
+C:\Users\piotr\source\repos\GraWZycie\GraWZycie\obj\Release\GraWZycie.csproj.CoreCompileInputs.cache
+C:\Users\piotr\source\repos\GraWZycie\GraWZycie\obj\Release\GraWZycie.exe
+C:\Users\piotr\source\repos\GraWZycie\GraWZycie\obj\Release\GraWZycie.pdb
+C:\Users\piotr\source\repos\GraWZycie\GraWZycie\obj\Release\GraWZycie.csprojAssemblyReference.cache

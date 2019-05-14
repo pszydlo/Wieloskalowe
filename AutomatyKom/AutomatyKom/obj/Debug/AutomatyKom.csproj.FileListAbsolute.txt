@@ -1,0 +1,10 @@
+C:\Users\piotr\source\repos\AutomatyKom\AutomatyKom\bin\Debug\AutomatyKom.exe.config
+C:\Users\piotr\source\repos\AutomatyKom\AutomatyKom\bin\Debug\AutomatyKom.exe
+C:\Users\piotr\source\repos\AutomatyKom\AutomatyKom\bin\Debug\AutomatyKom.pdb
+C:\Users\piotr\source\repos\AutomatyKom\AutomatyKom\obj\Debug\AutomatyKom.csprojAssemblyReference.cache
+C:\Users\piotr\source\repos\AutomatyKom\AutomatyKom\obj\Debug\AutomatyKom.Form1.resources
+C:\Users\piotr\source\repos\AutomatyKom\AutomatyKom\obj\Debug\AutomatyKom.Properties.Resources.resources
+C:\Users\piotr\source\repos\AutomatyKom\AutomatyKom\obj\Debug\AutomatyKom.csproj.GenerateResource.cache
+C:\Users\piotr\source\repos\AutomatyKom\AutomatyKom\obj\Debug\AutomatyKom.csproj.CoreCompileInputs.cache
+C:\Users\piotr\source\repos\AutomatyKom\AutomatyKom\obj\Debug\AutomatyKom.exe
+C:\Users\piotr\source\repos\AutomatyKom\AutomatyKom\obj\Debug\AutomatyKom.pdb
