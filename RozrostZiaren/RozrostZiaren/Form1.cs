@@ -15,10 +15,10 @@ namespace RozrostZiaren
         private Graphics g;
         private Pen p;
         private int width, height;
-        private const int SIZECELL = 10;
+        private const int SIZECELL = 8;
         private  int [][] oldBoard;
         private int[][] currentBoard;
-        private int numberOfseed;
+        private int numberOfseed=0;
         private int radius;
         private int typeBoundaryConditions;
         private bool isManualDefinitionStart = false;
@@ -50,6 +50,7 @@ namespace RozrostZiaren
         }
         void set()
         {
+            
             pictureBox1.Width = Int32.Parse(textBox1.Text);
             pictureBox1.Height = Int32.Parse(textBox2.Text);
             width = Int32.Parse(textBox1.Text) / SIZECELL;
@@ -87,13 +88,20 @@ namespace RozrostZiaren
                     int column = Int32.Parse(textBox4.Text);
                     numberOfseed = row * column;
                     setColorTable();
-                    for (int x = 2; x < width && actualseed<numberOfseed; x+= width / row )
-                        for (int y = 2; y < height && actualseed < numberOfseed; y+= height / column )
+                    int xDif = width / (row);
+                    int yDif = height / (column);
+                    for (int a = 0,x=xDif/2; a < row ; a++,x+=xDif )
+                    {
+                        for (int b = 0,y=yDif/2; b < column; b++,y+=yDif )
                         {
                             oldBoard[x][y] = actualseed;
                             g.FillRectangle(new SolidBrush(seedColorTable[actualseed]), x * SIZECELL, y * SIZECELL, SIZECELL, SIZECELL);
                             actualseed++;
+                            
                         }
+
+                    }
+                        
                     timer1.Start();
 
                     break;
@@ -103,18 +111,47 @@ namespace RozrostZiaren
                     numberOfseed = Int32.Parse(textBox4.Text);
                     setColorTable();
                     leftSeed = numberOfseed;
-                    for (int x = radius; x < width && leftSeed>0; x += radius+1)
-                        for (int y = radius; y < height && leftSeed > 0; y +=radius+1)
+
+                    while (actualseed < numberOfseed)    
+                    for(int i=0;i<4&& actualseed < numberOfseed; i++)
+                    {
+                        bool isSeeded = true;
+                        int x = rnd.Next(width);
+                        int y = rnd.Next(height);
+                        if(typeBoundaryConditions==0)
+                         {
+                                for (int a=mod(x-radius,width);mod(a,width)< mod(x + radius, width);a++)
+                                    for (int b = mod(y - radius, height); mod(b, height) < mod(y + radius, height); b++)
+                                    {
+                                        if (oldBoard[mod(a, width)][mod(b, height)] != -1)
+                                            isSeeded = false;
+                                    }
+
+                         }
+                        else
+                         {
+                                for (int a = mod2(x - radius, width); mod2(a, width) < mod2(x + radius, width); a++)
+                                    for (int b = mod2(y - radius, height); mod2(b, height) < mod2(y + radius, height); b++)
+                                    {
+                                        if (oldBoard[mod2(a, width)][mod2(b, height)] != -1)
+                                            isSeeded = false;
+                                    }
+                        }
+                           
+                        if (isSeeded)
                         {
                             oldBoard[x][y] = actualseed;
                             g.FillRectangle(new SolidBrush(seedColorTable[actualseed]), x * SIZECELL, y * SIZECELL, SIZECELL, SIZECELL);
                             actualseed++;
                             leftSeed--;
+                            
                         }
-                    if(leftSeed>0)
+                    }
+                    if (leftSeed>0)
                     {
                         label5.Text = "Pozostało \n" + leftSeed + "\nziaren których nie dało się pozadzić";
                         label5.Visible = true;
+                        numberOfseed = actualseed;
                     }
 
                     timer1.Start();
@@ -128,7 +165,7 @@ namespace RozrostZiaren
                     {
                         int x = rnd.Next(width);
                         int y = rnd.Next(height);
-                        if (oldBoard[x][y] != 0)
+                        if (oldBoard[x][y] != -1)
                         {
                             oldBoard[x][y] = actualseed;
                             g.FillRectangle(new SolidBrush(seedColorTable[actualseed]), x * SIZECELL, y * SIZECELL, SIZECELL, SIZECELL);
@@ -140,7 +177,7 @@ namespace RozrostZiaren
                     break;
                 case 3:
 
-                    setColorTable();
+                    
                    
                     break;
                 default:
@@ -148,7 +185,6 @@ namespace RozrostZiaren
             }
             
         }
-
         void live()
         {
             if(typeBoundaryConditions==0)
@@ -239,7 +275,6 @@ namespace RozrostZiaren
                     oldBoard[x][y] = currentBoard[x][y];
                 }
         }
-
         void setColorTable()
         {
             seedColorTable = new Color[numberOfseed];
@@ -252,19 +287,22 @@ namespace RozrostZiaren
         {
             set();
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             typeBoundaryConditions = 1;
-            initial();
+            if (comboBox1.SelectedIndex != 3)
+                initial();
+            else
+                timer1.Start();
         }
-
         private void button3_Click(object sender, EventArgs e)
         {
             typeBoundaryConditions = 0;
-            initial();
+            if (comboBox1.SelectedIndex != 3)
+                initial();
+            else
+                timer1.Start();
         }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             
@@ -280,31 +318,34 @@ namespace RozrostZiaren
             }
 
         }
-
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            if(oldBoard[e.X/SIZECELL][e.Y / SIZECELL] !=-1)
+            int Xmouse = e.X / SIZECELL, Ymouse = e.Y / SIZECELL;
+            if (oldBoard[Xmouse][Ymouse] ==-1)
             {
                 numberOfseed++;
                 Color[] newseedColorTable=new Color[numberOfseed];
-                for (int i = 0; i < numberOfseed - 1; i++)
+                for (int i = 0; i < numberOfseed -1; i++)
                     newseedColorTable[i] = seedColorTable[i];
 
-                oldBoard[e.X / SIZECELL][e.Y / SIZECELL] = numberOfseed;
-                newseedColorTable[numberOfseed-1] = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
-               
+                oldBoard[Xmouse][Ymouse] = numberOfseed-1;
                 
-                seedColorTable = newseedColorTable;
+                newseedColorTable[numberOfseed-1] = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+                Array.Resize(ref seedColorTable, numberOfseed);
+                Array.Copy(newseedColorTable, seedColorTable, numberOfseed);
+                g.FillRectangle(new SolidBrush(seedColorTable[numberOfseed-1]), Xmouse * SIZECELL, Ymouse* SIZECELL, SIZECELL, SIZECELL);
+
+                
+                
 
             }
         }
-
         private void button4_Click(object sender, EventArgs e)
         {
             
             if(isManualDefinitionStart)
             {
-                timer1.Start();
+                
                 button4.Visible = false;
                 button4.Text = "Rozpocznij definicje ręczną";
             }
@@ -317,7 +358,6 @@ namespace RozrostZiaren
             }
             
         }
-
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             timer1.Stop();
@@ -326,6 +366,7 @@ namespace RozrostZiaren
             label3.Visible = true;
             textBox3.Visible = true;
             label5.Visible = false;
+            label5.Text = "";
             label6.Visible = true;
             button4.Visible = false;
             label6.Text = "Status";
