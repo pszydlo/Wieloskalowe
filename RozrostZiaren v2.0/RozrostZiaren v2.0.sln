@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RozrostZiaren v2.0", "RozrostZiaren v2.0\RozrostZiaren v2.0.csproj", "{118413EA-BB29-4DD7-975F-E278EA99A27B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{118413EA-BB29-4DD7-975F-E278EA99A27B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{118413EA-BB29-4DD7-975F-E278EA99A27B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{118413EA-BB29-4DD7-975F-E278EA99A27B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{118413EA-BB29-4DD7-975F-E278EA99A27B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B81AEBAE-9531-4548-A2A2-2A3037B2C623}
+	EndGlobalSection
+EndGlobal
