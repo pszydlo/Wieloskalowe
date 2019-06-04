@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace RozrostZiaren_v2._0
         private Graphics g;
         private Pen p;
         private int width, height;
-        private const int SIZECELL = 4;
+        private const int SIZECELL = 2;
         private Cell[][] oldBoard;
         private Cell[][] currentBoard;
         private int numberOfseed = 0;
@@ -25,6 +26,10 @@ namespace RozrostZiaren_v2._0
         private Color [] colorArray;
         private List<Point> listPoints;
         private Dictionary<int, Color> energyColor;
+        private List<double> roList;
+        private List<double> sigmaList;
+        private double procRo = 0.3;
+        
 
         private Random rnd = new Random();
         public class Cell
@@ -34,6 +39,9 @@ namespace RozrostZiaren_v2._0
             public int state;
             public Color color;
             public int energy;
+            public double densityOfDislocations;
+            public bool IsRecrystallized;
+            public bool IsNeighbor;
             public Cell(int x,int y,int state)
             {
                 Random random = new Random();
@@ -41,7 +49,10 @@ namespace RozrostZiaren_v2._0
                 this.y = random.NextDouble() * SIZECELL + y*SIZECELL;
                 this.state = state;
                 this.color = Color.White;
+                this.IsRecrystallized = false;
+                densityOfDislocations = 0;
                 energy = 0;
+                IsNeighbor = false;
             }
 
             public double len(double x1,double y1)
@@ -114,6 +125,9 @@ namespace RozrostZiaren_v2._0
             listPoints = new List<Point>();
             energyColor = new Dictionary<int, Color>();
             energyColor.Add(0, Color.White);
+            roList = new List<double>();
+            sigmaList = new List<double>();
+            
             p = new Pen(Color.Black, 1);
             for (int i = 0; i < width; i++)
             {
@@ -256,66 +270,8 @@ namespace RozrostZiaren_v2._0
                     break;
             }
         }
-        int mostPopularNeighbor(int x,int y)
-        {
-            int[] neighbor = new int[numberOfseed];
-            for (int i = 0; i < numberOfseed; i++)
-                neighbor[i] = 0;
-            switch (comboBox1.SelectedIndex)
-            {
-                case 0:
-                    {
-                        if ((mod(x - 1, width) < 0 || (mod(y, height) < 0) )? false : (oldBoard[mod(x - 1, width)][y].state > -1 ? true : false))
-                            neighbor[oldBoard[mod(x - 1, width)][y].state]++;
-                        if ((mod(x + 1, width) < 0 || (mod(y, height) < 0) )? false : (oldBoard[mod(x + 1, width)][y].state > -1 ? true : false))
-                            neighbor[oldBoard[mod(x + 1, width)][y].state]++;
-                        if ((mod(x, width) < 0 || (mod(y - 1, height) < 0) )? false : (oldBoard[x][mod(y - 1, height)].state > -1 ? true : false))
-                            neighbor[oldBoard[x][mod(y - 1, height)].state]++;
-                        if ((mod(x, width) < 0 || (mod(y + 1, height) < 0) )? false : (oldBoard[x][mod(y + 1, height)].state > -1 ? true : false))
-                            neighbor[oldBoard[x][mod(y + 1, height)].state]++;
-                    }
-                    break;
-
-                case 1:
-                    {
-                        neighbor = neighborCounter(3, true, false, 1, 1, neighbor, x, y, x, y);
-                    }
-                    break;
-
-                case 2:
-                    {
-                        neighbor = neighborCounter(0, false, false, 1, 1, neighbor, x, y, x, y);
-                    }
-                    break;
-                case 3:
-                    {
-                        neighbor = neighborCounter(1, false, false, 1, 1, neighbor, x, y, x, y);
-                    }
-                    break;
-                case 4:
-                    {
-                        neighbor = neighborCounter(rnd.Next(3), false, false, 1, 1, neighbor, x, y, x, y);
-                    }
-                    break;
-                case 5:
-                    {
-                        neighbor = neighborCounter(3, false, false, 1, 1, neighbor, x, y, x, y);
-                    }
-                    break;
-                case 6:
-                    {
-                        neighbor = neighborCounter(3, false, true, (int)radius+1, radius * SIZECELL, neighbor, x, y, oldBoard[x][y].x, oldBoard[x][y].y);
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-
-            return (neighbor.Max() > 0 ? Array.IndexOf(neighbor, neighbor.Max()):-1);
-        }
-
-        List<int> popularNeighbor(int x, int y)
+    
+        Dictionary<int,int> popularNeighbor(int x, int y)
         {
             int[] neighbor = new int[numberOfseed];
             for (int i = 0; i < numberOfseed; i++)
@@ -370,11 +326,11 @@ namespace RozrostZiaren_v2._0
                 default:
                     break;
             }
-            List<int> neighborList=new List<int>();
+            Dictionary<int,int> neighborList=new Dictionary<int,int>();
 
                 for (int i = 0; i < numberOfseed; i++)
                     if (neighbor[i] != 0)
-                        neighborList.Add(i);
+                        neighborList.Add(i, neighbor[i]);
             return neighborList;
         }
 
@@ -475,7 +431,8 @@ namespace RozrostZiaren_v2._0
                     copyCell(oldBoard[x][y], currentBoard[x][y]);
                     if(currentBoard[x][y].state==-1)
                     {
-                        currentBoard[x][y].state= mostPopularNeighbor(x, y);
+                        List<int> state=popularNeighbor(x, y).Keys.ToList();
+                        currentBoard[x][y].state = state.Count == 0 ? -1 : state.Max();
                         if (currentBoard[x][y].state != -1)
                         {
                             currentBoard[x][y].color = colorArray[currentBoard[x][y].state];
@@ -519,14 +476,14 @@ namespace RozrostZiaren_v2._0
                 int los=rnd.Next(listPoints.Count);
                 Point p = listPoints[los];
                 listPoints.Remove(p);
-                List<int> vs=popularNeighbor(p.X, p.Y);
+                List<int> vs=popularNeighbor(p.X, p.Y).Keys.ToList();
                 if (vs.Contains(oldBoard[p.X][ p.Y].state))
                 {
                     vs.Remove(oldBoard[p.X][p.Y].state);
                 }
                 int Ebefore = vs.Count;
                 int state =Ebefore>0? vs[rnd.Next(Ebefore)]: oldBoard[p.X][p.Y].state;
-                vs = popularNeighbor(p.X, p.Y);
+                vs = popularNeighbor(p.X, p.Y).Keys.ToList();
                 if (vs.Contains(state))
                 {
                     vs.Remove(state);
@@ -569,6 +526,158 @@ namespace RozrostZiaren_v2._0
                     g.FillRectangle(new SolidBrush(oldBoard[x][y].color), x * SIZECELL, y * SIZECELL, SIZECELL, SIZECELL);
                 }
             label7.Text = "End Procesing";
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            DRX();
+        }
+
+        void DRX ()
+        {
+            double A = double.Parse(textBox2.Text);
+            double B = double.Parse(textBox3.Text);
+            double time = double.Parse(textBox8.Text);
+            double stepTime = double.Parse(textBox9.Text);
+            double roCritical = double.Parse(textBox4.Text)/(width*height);
+            Console.WriteLine(roCritical);
+            double ro,deltaRo;
+            double roForAll;
+            
+            List<Point> recrystalizedCellOld = new List<Point>();
+            List<Point> recrystalizedCellNew = new List<Point>();
+            roList.Add(0);
+
+            for (int i = 0; i < width; i++)
+                for (int j = 0; j < height; j++)
+                {
+                    List<int> vs = popularNeighbor(i, j).Keys.ToList();
+                    if (vs.Contains(oldBoard[i][j].state))
+                    {
+                        vs.Remove(oldBoard[i][j].state);
+                    }
+                    if (vs.Count > 0)
+                        oldBoard[i][j].IsNeighbor = true;
+                }
+            
+
+            for (double t=0;t<time;t+=stepTime)
+            {
+                ro = A / B + (1 - A / B) * Math.Exp(-B * t);
+                deltaRo = -roList.Last();
+                roList.Add(ro);
+                deltaRo += ro;
+                roForAll =procRo* deltaRo / (height * width);
+                
+                for (int i = 0; i < width; i++)
+                    for (int j = 0; j < height; j++)
+                    {
+                        oldBoard[i][j].densityOfDislocations = roForAll;
+                    }
+                
+                deltaRo = (1 - procRo) * deltaRo;
+                bool IsAssigned;
+
+                roForAll = deltaRo * (rnd.NextDouble() / 100);
+                while (deltaRo>0)
+                {
+                    IsAssigned = false;
+                    
+                    if (deltaRo-roForAll<0)
+                    {
+                        roForAll = deltaRo;
+                        deltaRo = 0;
+                    }
+
+                    int x = rnd.Next(width);
+                    int y = rnd.Next(height);
+                    if(oldBoard[x][y].IsNeighbor)
+                    {
+                        if(rnd.NextDouble()<0.8)
+                        {
+                            oldBoard[x][y].densityOfDislocations += roForAll;
+                            IsAssigned = true;
+                        }
+                    }
+                    else
+                    {
+                        if (rnd.NextDouble() < 0.2)
+                        {
+                            oldBoard[x][y].densityOfDislocations += roForAll;
+                            IsAssigned = true;
+                        }
+                    }
+          
+                    if(IsAssigned)
+                    {
+                        deltaRo -= roForAll;
+                    }
+                }
+
+                if(recrystalizedCellOld.Count>0)
+                for (int i = 0; i < width; i++)
+                    for (int j = 0; j < height; j++)
+                    {
+                        if(recrystalizedCellOld
+                            .Any(v=>(
+                                    (v.X==mod(i-1,width) && v.Y==j) ||
+                                    (v.X == mod(i + 1, width) && v.Y == j) ||
+                                    (v.X  == i && v.Y == mod(j - 1, height)) ||
+                                    (v.X == i && v.Y == mod(j + 1, height)) 
+                                    )))
+                            
+                            if(
+                                oldBoard[i][j].densityOfDislocations> oldBoard[mod(i - 1, width)][j].densityOfDislocations &&
+                                oldBoard[i][j].densityOfDislocations > oldBoard[mod(i + 1, width)][j].densityOfDislocations &&
+                                oldBoard[i][j].densityOfDislocations > oldBoard[i][mod(j - 1, height)].densityOfDislocations &&
+                                oldBoard[i][j].densityOfDislocations > oldBoard[i][mod(j + 1, height)].densityOfDislocations 
+                                )
+                            {
+                                oldBoard[i][j].color = Color.GreenYellow;
+                                oldBoard[i][j].densityOfDislocations = 0;
+                                oldBoard[i][j].state = numberOfseed;
+                                recrystalizedCellNew.Add(new Point(i, j));
+                            }
+                    }
+
+
+                  for (int i = 0; i < width; i++)
+                    for (int j = 0; j < height; j++)
+                    {
+                       if( oldBoard[i][j].densityOfDislocations>roCritical && oldBoard[i][j].IsNeighbor)
+                        {
+                            oldBoard[i][j].color = Color.GreenYellow;
+                            oldBoard[i][j].densityOfDislocations = 0;
+                            oldBoard[i][j].state = numberOfseed;
+                            recrystalizedCellNew.Add(new Point(i, j));
+                        }
+                    }
+                recrystalizedCellOld.RemoveRange(0, recrystalizedCellOld.Count);
+                recrystalizedCellOld.AddRange(recrystalizedCellNew);
+
+                label7.Refresh();
+                label7.Text = "Time: " + t;
+
+                for (int x = 0; x < width; x++)
+                    for (int y = 0; y < height; y++)
+                    {
+                        g.FillRectangle(new SolidBrush(oldBoard[x][y].color), x * SIZECELL, y * SIZECELL, SIZECELL, SIZECELL);
+                    }
+            }
+            string path = @"C:\Users\piotr\source\repos\Wieloskalowe\RozrostZiaren v2.0\RozrostZiaren v2.0\data.txt";
+            StreamWriter sw = File.CreateText(path);
+            
+            for(int i=0;i<roList.Count;i++)
+            {
+                sw.WriteLine(i + " " + roList[i]);
+            }
+            sw.Close();
+
+                
+            
+            label7.Refresh();
+            label7.Text = "End";
+
         }
     }
 }
