@@ -548,21 +548,24 @@ namespace RozrostZiaren_v2._0
             List<Point> recrystalizedCellNew = new List<Point>();
             roList.Add(0);
 
-            for (int i = 0; i < width; i++)
-                for (int j = 0; j < height; j++)
-                {
-                    List<int> vs = popularNeighbor(i, j).Keys.ToList();
-                    if (vs.Contains(oldBoard[i][j].state))
-                    {
-                        vs.Remove(oldBoard[i][j].state);
-                    }
-                    if (vs.Count > 0)
-                        oldBoard[i][j].IsNeighbor = true;
-                }
             
 
+            numberOfseed++;
             for (double t=0;t<time;t+=stepTime)
             {
+                for (int i = 0; i < width; i++)
+                    for (int j = 0; j < height; j++)
+                    {
+                        List<int> vs = popularNeighbor(i, j).Keys.ToList();
+                        if (vs.Contains(oldBoard[i][j].state))
+                        {
+                            vs.Remove(oldBoard[i][j].state);
+                        }
+                        if (vs.Count > 0)
+                            oldBoard[i][j].IsNeighbor = true;
+                    }
+
+
                 ro = A / B + (1 - A / B) * Math.Exp(-B * t);
                 deltaRo = -roList.Last();
                 roList.Add(ro);
@@ -613,29 +616,29 @@ namespace RozrostZiaren_v2._0
                         deltaRo -= roForAll;
                     }
                 }
-
-                if(recrystalizedCellOld.Count>0)
+                Console.WriteLine(recrystalizedCellOld.Count);
+                if (recrystalizedCellOld.Count>0)
                 for (int i = 0; i < width; i++)
                     for (int j = 0; j < height; j++)
                     {
                         if(recrystalizedCellOld
                             .Any(v=>(
-                                    (v.X==mod(i-1,width) && v.Y==j) ||
+                                    (v.X == mod(i-1,width) && v.Y==j) ||
                                     (v.X == mod(i + 1, width) && v.Y == j) ||
                                     (v.X  == i && v.Y == mod(j - 1, height)) ||
                                     (v.X == i && v.Y == mod(j + 1, height)) 
                                     )))
                             
                             if(
-                                oldBoard[i][j].densityOfDislocations> oldBoard[mod(i - 1, width)][j].densityOfDislocations &&
+                                oldBoard[i][j].densityOfDislocations > oldBoard[mod(i - 1, width)][j].densityOfDislocations &&
                                 oldBoard[i][j].densityOfDislocations > oldBoard[mod(i + 1, width)][j].densityOfDislocations &&
                                 oldBoard[i][j].densityOfDislocations > oldBoard[i][mod(j - 1, height)].densityOfDislocations &&
                                 oldBoard[i][j].densityOfDislocations > oldBoard[i][mod(j + 1, height)].densityOfDislocations 
                                 )
                             {
-                                oldBoard[i][j].color = Color.GreenYellow;
+                                oldBoard[i][j].color = Color.Green;
                                 oldBoard[i][j].densityOfDislocations = 0;
-                                oldBoard[i][j].state = numberOfseed;
+                                oldBoard[i][j].state = numberOfseed-1;
                                 recrystalizedCellNew.Add(new Point(i, j));
                             }
                     }
@@ -648,12 +651,13 @@ namespace RozrostZiaren_v2._0
                         {
                             oldBoard[i][j].color = Color.GreenYellow;
                             oldBoard[i][j].densityOfDislocations = 0;
-                            oldBoard[i][j].state = numberOfseed;
+                            oldBoard[i][j].state = numberOfseed-1;
                             recrystalizedCellNew.Add(new Point(i, j));
                         }
                     }
-                recrystalizedCellOld.RemoveRange(0, recrystalizedCellOld.Count);
+                recrystalizedCellOld.Clear();
                 recrystalizedCellOld.AddRange(recrystalizedCellNew);
+                recrystalizedCellNew.Clear();
 
                 label7.Refresh();
                 label7.Text = "Time: " + t;
